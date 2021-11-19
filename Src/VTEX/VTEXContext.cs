@@ -1118,6 +1118,34 @@ namespace VTEX
 
         #region Catalog
 
+        #region Product
+        public async Task<Product> GetProductAsync(string refId)
+        {
+            LogConsumer.Info("Getting Product of RefId {0}", refId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
+                                             $@"{PlatformConstants.Catalog}/products/productgetbyrefid/{refId}",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
+            var product = SerializerFactory.GetSerializer<Product>().Deserialize(json);
+            LogConsumer.Debug(product, $"vtex-product-byRedId-{refId}.js");
+            return product;
+        }
+        #endregion
+
+        #region Sku
+        public async Task<Sku> GetSkuAsync(int skuId)
+        {
+            LogConsumer.Info("Getting Product of RefId {0}", skuId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
+                                             $@"{PlatformConstants.Catalog}/sku/stockkeepingunitbyid/{skuId}",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
+            var sku = SerializerFactory.GetSerializer<Sku>().Deserialize(json);
+            LogConsumer.Debug(sku, $"vtex-sku-byId-{skuId}.js");
+            return sku;
+        }
+        #endregion
+
         #region Specification
 
         /// <summary>
