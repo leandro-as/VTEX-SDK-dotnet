@@ -65,5 +65,10 @@
         /// The rest catalog pub
         /// </summary>
         public const string CatalogPub = "catalog_system/pub";
+
+        /// <summary>
+        /// The rest catalog
+        /// </summary>
+        public const string CatalogComplement = "catalog/pvt";
     }
 }

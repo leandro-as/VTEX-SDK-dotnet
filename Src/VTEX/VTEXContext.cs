@@ -1135,7 +1135,7 @@ namespace VTEX
         #region Sku
         public async Task<Sku> GetSkuAsync(int skuId)
         {
-            LogConsumer.Info("Getting Product of RefId {0}", skuId);
+            LogConsumer.Info("Getting Sku of Id {0}", skuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
                                              $@"{PlatformConstants.Catalog}/sku/stockkeepingunitbyid/{skuId}",
@@ -1144,7 +1144,31 @@ namespace VTEX
             LogConsumer.Debug(sku, $"vtex-sku-byId-{skuId}.js");
             return sku;
         }
+
+        public async Task<List<Complement>> GetSkuComplementAsync(int skuId)
+        {
+            LogConsumer.Info("Getting Sku Complement of id {0}", skuId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/complement",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
+            var sku = SerializerFactory.GetSerializer<List<Complement>>().Deserialize(json);
+            LogConsumer.Debug(sku, $"vtex-sku-complement-byId-{skuId}.js");
+            return sku;
+        }
+
+        public async Task CreateSkuComplementAsync(Complement complement)
+        {
+            var data = (string)complement.GetSerializer();
+            LogConsumer.Info("Set Complement {0}", complement.ParentSkuId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            await _wrapper.ServiceInvokerAsync(HttpRequestMethod.POST,
+                                             $@"{PlatformConstants.Catalog}/skucomplement",
+                                             source.Token, data: data).ConfigureAwait(false);
+            LogConsumer.Debug(complement, $"vtex-create-sku-complement{complement.ParentSkuId}.js");
+        }
         #endregion
+
 
         #region Specification
 
