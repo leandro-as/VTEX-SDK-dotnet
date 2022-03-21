@@ -1124,7 +1124,7 @@ namespace VTEX
             LogConsumer.Info("Getting Product of RefId {0}", refId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
-                                             $@"{PlatformConstants.Catalog}/products/productgetbyrefid/{refId}",
+                                             $@"{PlatformConstants.CatalogSystem}/products/productgetbyrefid/{refId}",
                                              source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
             var product = SerializerFactory.GetSerializer<Product>().Deserialize(json);
             LogConsumer.Debug(product, $"vtex-product-byRedId-{refId}.js");
@@ -1138,7 +1138,7 @@ namespace VTEX
             LogConsumer.Info("Getting Sku of Id {0}", skuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
-                                             $@"{PlatformConstants.Catalog}/sku/stockkeepingunitbyid/{skuId}",
+                                             $@"{PlatformConstants.CatalogSystem}/sku/stockkeepingunitbyid/{skuId}",
                                              source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
             var sku = SerializerFactory.GetSerializer<Sku>().Deserialize(json);
             LogConsumer.Debug(sku, $"vtex-sku-byId-{skuId}.js");
@@ -1150,7 +1150,7 @@ namespace VTEX
             LogConsumer.Info("Getting Sku Complement of id {0}", skuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
-                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/complement",
+                                             $@"{PlatformConstants.CatalogSystem}/stockkeepingunit/{skuId}/complement",
                                              source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
             var sku = SerializerFactory.GetSerializer<List<Complement>>().Deserialize(json);
             LogConsumer.Debug(sku, $"vtex-sku-complement-byId-{skuId}.js");
@@ -1163,9 +1163,43 @@ namespace VTEX
             LogConsumer.Info("Set Complement {0}", complement.ParentSkuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             await _wrapper.ServiceInvokerAsync(HttpRequestMethod.POST,
-                                             $@"{PlatformConstants.Catalog}/skucomplement",
+                                             $@"{PlatformConstants.CatalogSystem}/skucomplement",
                                              source.Token, data: data).ConfigureAwait(false);
             LogConsumer.Debug(complement, $"vtex-create-sku-complement{complement.ParentSkuId}.js");
+        }
+
+        public async Task<List<ResponseImage>> GetSkuFile(int skuId)
+        {
+            LogConsumer.Info("Getting Sku File of id {0}", skuId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
+                                             $@"{PlatformConstants.CatalogSystem}/stockkeepingunit/{skuId}/file",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
+            var sku = SerializerFactory.GetSerializer<List<ResponseImage>>().Deserialize(json);
+            LogConsumer.Debug(sku, $"vtex-sku-file-byId-{skuId}.js");
+            return sku;
+        }
+
+        public async Task<ResponseImage> CreateSKUFileAsync(int skuId, PostImage image)
+        {
+            var data = (string)image.GetSerializer();
+            LogConsumer.Info("Create SKU File {0}", image.Name);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.POST,
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/file",
+                                             source.Token, data: data).ConfigureAwait(false);
+            var response = SerializerFactory.GetSerializer<ResponseImage>().Deserialize(json);
+            LogConsumer.Debug(image, $"vtex-create-sku-complement{image.Name}.js");
+            return response;
+        }
+
+        public async Task CopyAllFilesFromAnSKUToOtherSKUAsync(int skuIdfrom, int skuIdto)
+        {
+            LogConsumer.Info("Copy All Files From {0} An SKU To {1}", skuIdfrom, skuIdto);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            await _wrapper.ServiceInvokerAsync(HttpRequestMethod.PUT,
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/copy/{skuIdfrom}/{skuIdto}/file/",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
         }
         #endregion
 
@@ -1249,7 +1283,7 @@ namespace VTEX
             var data = (string)specifications.GetSerializer();
             await _wrapper.ServiceInvokerAsync(
                                                HttpRequestMethod.POST,
-                                               $@"{PlatformConstants.Catalog}/products/{productId}/specification",
+                                               $@"{PlatformConstants.CatalogSystem}/products/{productId}/specification",
                                                token,
                                                data: data)
                           .ConfigureAwait(false);
@@ -1268,7 +1302,7 @@ namespace VTEX
             var data = (string)fieldValue.GetSerializer();
             await _wrapper.ServiceInvokerAsync(
                                                HttpRequestMethod.POST,
-                                               $@"{PlatformConstants.Catalog}/specification/fieldValue",
+                                               $@"{PlatformConstants.CatalogSystem}/specification/fieldValue",
                                                token,
                                                data: data)
                           .ConfigureAwait(false);

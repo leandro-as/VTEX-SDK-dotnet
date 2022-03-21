@@ -59,7 +59,7 @@
         /// <summary>
         /// The rest catalog
         /// </summary>
-        public const string Catalog = "catalog_system/pvt";
+        public const string CatalogSystem = "catalog_system/pvt";
 
         /// <summary>
         /// The rest catalog pub
@@ -69,6 +69,6 @@
         /// <summary>
         /// The rest catalog
         /// </summary>
-        public const string CatalogComplement = "catalog/pvt";
+        public const string Catalog = "catalog/pvt";
     }
 }
