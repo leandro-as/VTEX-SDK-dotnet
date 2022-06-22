@@ -42,7 +42,16 @@
         /// <value>
         /// The events.
         /// </value>
-        [JsonProperty("events")]
+        [JsonProperty("events", NullValueHandling = NullValueHandling.Ignore)]
         public TrackingEvent[] Events { get; set; }
+
+        /// <summary>
+        /// Gets or sets the devlivered date
+        /// </summary>
+        /// <value>
+        /// The DeliveredDate
+        /// </value>
+        [JsonProperty("deliveredDate", NullValueHandling = NullValueHandling.Ignore)]
+        public string DeliveredDate { get; set; }
     }
 }

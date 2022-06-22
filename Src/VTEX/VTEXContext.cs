@@ -648,6 +648,7 @@ namespace VTEX
         {
             try
             {
+                var data = (string)tracking.GetSerializer();
                 LogConsumer.Info("Sending tracking info of order {0}", tracking.OrderId);
                 var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
                 LogConsumer.Debug(tracking, $"vtex-tracking-info-{tracking.OrderId}-{tracking.InvoiceNumber}.js");
@@ -656,7 +657,7 @@ namespace VTEX
                                                                       tracking.OrderId,
                                                                       tracking.InvoiceNumber),
                                                         source.Token,
-                                                        data: (string)tracking.GetSerializer()).ConfigureAwait(false);
+                                                        data: data).ConfigureAwait(false);
                 var receipt = SerializerFactory.GetSerializer<ResponseReceipt>().Deserialize(json);
                 LogConsumer.Trace(receipt.Receipt);
                 return receipt.Receipt;
@@ -1150,7 +1151,7 @@ namespace VTEX
             LogConsumer.Info("Getting Sku Complement of id {0}", skuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
-                                             $@"{PlatformConstants.CatalogSystem}/stockkeepingunit/{skuId}/complement",
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/complement",
                                              source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
             var sku = SerializerFactory.GetSerializer<List<Complement>>().Deserialize(json);
             LogConsumer.Debug(sku, $"vtex-sku-complement-byId-{skuId}.js");
@@ -1163,7 +1164,7 @@ namespace VTEX
             LogConsumer.Info("Set Complement {0}", complement.ParentSkuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             await _wrapper.ServiceInvokerAsync(HttpRequestMethod.POST,
-                                             $@"{PlatformConstants.CatalogSystem}/skucomplement",
+                                             $@"{PlatformConstants.Catalog}/skucomplement",
                                              source.Token, data: data).ConfigureAwait(false);
             LogConsumer.Debug(complement, $"vtex-create-sku-complement{complement.ParentSkuId}.js");
         }
@@ -1173,7 +1174,7 @@ namespace VTEX
             LogConsumer.Info("Getting Sku File of id {0}", skuId);
             var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
             var json = await _wrapper.ServiceInvokerAsync(HttpRequestMethod.GET,
-                                             $@"{PlatformConstants.CatalogSystem}/stockkeepingunit/{skuId}/file",
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/file",
                                              source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
             var sku = SerializerFactory.GetSerializer<List<ResponseImage>>().Deserialize(json);
             LogConsumer.Debug(sku, $"vtex-sku-file-byId-{skuId}.js");
@@ -1191,6 +1192,15 @@ namespace VTEX
             var response = SerializerFactory.GetSerializer<ResponseImage>().Deserialize(json);
             LogConsumer.Debug(image, $"vtex-create-sku-complement{image.Name}.js");
             return response;
+        }
+
+        public async Task DeleteSKUFileAsync(int skuId)
+        {
+            LogConsumer.Info("Delete SKU File {0}", skuId);
+            var source = new CancellationTokenSource(new TimeSpan(0, 5, 0));
+            await _wrapper.ServiceInvokerAsync(HttpRequestMethod.DELETE,
+                                             $@"{PlatformConstants.Catalog}/stockkeepingunit/{skuId}/file",
+                                             source.Token, restEndpoint: RequestEndpoint.DEFAULT).ConfigureAwait(false);
         }
 
         public async Task CopyAllFilesFromAnSKUToOtherSKUAsync(int skuIdfrom, int skuIdto)
