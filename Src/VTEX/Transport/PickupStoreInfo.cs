@@ -15,7 +15,7 @@
         /// The additional information.
         /// </value>
         [JsonProperty("additionalInfo")]
-        public NotNullObserver AdditionalInfo { get; set; }
+        public string AdditionalInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the address.
@@ -24,7 +24,7 @@
         /// The address.
         /// </value>
         [JsonProperty("address")]
-        public NotNullObserver Address { get; set; }
+        public Address Address { get; set; }
 
         /// <summary>
         /// Gets or sets the dock identifier.
@@ -33,7 +33,7 @@
         /// The dock identifier.
         /// </value>
         [JsonProperty("dockId")]
-        public NotNullObserver DockId { get; set; }
+        public string DockId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the friendly.
@@ -42,7 +42,7 @@
         /// The name of the friendly.
         /// </value>
         [JsonProperty("friendlyName")]
-        public NotNullObserver FriendlyName { get; set; }
+        public string FriendlyName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is pickup store.

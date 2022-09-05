@@ -463,7 +463,7 @@
         /// The authorized date.
         /// </value>
         [JsonProperty("authorizedDate")]
-        public DateTime AuthorizedDate { get; set; }
+        public DateTime? AuthorizedDate { get; set; }
 
     }
 }

@@ -21,7 +21,7 @@
         /// </summary>
 
         [JsonProperty("trackingId")]
-        public long TrackingId { get; set; }
+        public string TrackingId { get; set; }
 
         /// <summary>
         /// The tracking label

@@ -78,6 +78,6 @@
         /// The marketing tags.
         /// </value>
         [JsonProperty("marketingTags")]
-        public NotNullObserver[] MarketingTags { get; set; }
+        public string[] MarketingTags { get; set; }
     }
 }
