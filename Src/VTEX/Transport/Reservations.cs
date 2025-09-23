@@ -1,4 +1,16 @@
 ﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="Reservations.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 namespace VTEX.Transport
 {
     using CrispyWaffle.Serialization;
@@ -7,7 +19,7 @@ namespace VTEX.Transport
     /// <summary>
     /// Class Reservations. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class Reservations
     {
         /// <summary>

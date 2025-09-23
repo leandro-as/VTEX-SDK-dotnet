@@ -1,13 +1,26 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="Reservation.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
+    using System;
     using CrispyWaffle.Serialization;
     using Newtonsoft.Json;
-    using System;
 
     /// <summary>
     /// Class Reservation. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class Reservation
     {
         /// <summary>
@@ -76,9 +89,7 @@
         /// <summary>
         /// Gets or sets the internal status.
         /// </summary>
-        /// <value>
-        /// The internal status.
-        /// </value>
+        /// <value>The internal status.</value>
         [JsonProperty("InternalStatus")]
         public string InternalStatus { get; set; }
     }

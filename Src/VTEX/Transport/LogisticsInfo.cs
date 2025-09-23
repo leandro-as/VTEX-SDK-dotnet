@@ -1,8 +1,21 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="LogisticsInfo.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
+    using System;
     using CrispyWaffle.Serialization;
     using Newtonsoft.Json;
-    using System;
 
     /// <summary>
     /// Class LogisticsInfo. This class cannot be inherited.
@@ -40,9 +53,7 @@
         /// <summary>
         /// Gets or sets the list price.
         /// </summary>
-        /// <value>
-        /// The list price.
-        /// </value>
+        /// <value>The list price.</value>
         [JsonProperty("listPrice")]
         public int ListPrice { get; set; }
 
@@ -75,11 +86,11 @@
         public DateTime? ShippingEstimateDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the slas.
+        /// Gets or sets the sla.
         /// </summary>
-        /// <value>The slas.</value>
+        /// <value>The sla.</value>
         [JsonProperty("slas")]
-        public Sla[] Slas { get; set; }
+        public Sla[] Sla { get; set; }
 
         /// <summary>
         /// Gets or sets the ships to.
@@ -105,37 +116,43 @@
         /// <summary>
         /// Gets the delivery channel.
         /// </summary>
-        /// <value>
-        /// The delivery channel.
-        /// </value>
+        /// <value>The delivery channel.</value>
         [JsonProperty("deliveryChannel")]
         public string DeliveryChannel { get; set; }
 
         /// <summary>
         /// Gets or sets the pickup store information.
         /// </summary>
-        /// <value>
-        /// The pickup store information.
-        /// </value>
+        /// <value>The pickup store information.</value>
         [JsonProperty("pickupStoreInfo")]
         public PickupStoreInfo PickupStoreInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the address identifier.
         /// </summary>
-        /// <value>
-        /// The address identifier.
-        /// </value>
+        /// <value>The address identifier.</value>
         [JsonProperty("addressId")]
         public string AddressId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the polygon.
         /// </summary>
-        /// <value>
-        /// The name of the polygon.
-        /// </value>
+        /// <value>The name of the polygon.</value>
         [JsonProperty("polygonName")]
         public NotNullObserver PolygonName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pickup point identifier.
+        /// </summary>
+        /// <value>The pickup point identifier.</value>
+        [JsonProperty("pickupPointId")]
+        public NotNullObserver PickupPointId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transit time.
+        /// </summary>
+        /// <value>The transit time.</value>
+        [JsonProperty("transitTime")]
+        public string TransitTime { get; set; }
     }
 }

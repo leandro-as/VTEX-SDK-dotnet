@@ -1,11 +1,18 @@
-﻿namespace VTEX
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="VTEXWrapper.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX
 {
-    using CrispyWaffle.Extensions;
-    using CrispyWaffle.Log;
-    using CrispyWaffle.Telemetry;
-    using CrispyWaffle.Utilities;
-    using Enums;
-    using GoodPractices;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -16,12 +23,19 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using CrispyWaffle.Extensions;
+    using CrispyWaffle.Log;
+    using CrispyWaffle.Telemetry;
+    using CrispyWaffle.Utilities;
+    using Enums;
+    using GoodPractices;
 
     /// <summary>
     /// Class Wrapper. This class cannot be inherited.
     /// </summary>
     /// <seealso cref="IDisposable" />
-    internal sealed class VTEXWrapper : IDisposable
+    // TODO change public to internal after remove from Integração Service
+    public sealed class VTEXWrapper : IDisposable
     {
         #region Private fields
 
@@ -63,12 +77,17 @@
                     return _internalUserAgent;
                 }
 
-                var assembly = System.Reflection.Assembly.GetAssembly(typeof(VTEXWrapper)).GetName();
+                var assembly = System
+                    .Reflection.Assembly.GetAssembly(typeof(VTEXWrapper))
+                    .GetName();
                 _internalUserAgent = $@"{assembly.Name}/{assembly.Version}";
                 return _internalUserAgent;
             }
         }
 
+        /// <summary>
+        /// The request mediator
+        /// </summary>
         private readonly ManualResetEvent _requestMediator = new ManualResetEvent(false);
 
         #endregion
@@ -114,7 +133,7 @@
         /// <param name="cookie">The cookie.</param>
         /// <param name="requiresAuthentication">if set to <c>true</c> [requires authentication].</param>
         /// <param name="isRetry">if set to <c>true</c> [is retry].</param>
-        /// <returns></returns>
+        /// <returns>System.String.</returns>
         private async Task<string> ServiceInvokerInternal(
             HttpRequestMethod method,
             string endpoint,
@@ -123,7 +142,8 @@
             UriBuilder uriBuilder,
             Cookie cookie,
             bool requiresAuthentication,
-            bool isRetry = false)
+            bool isRetry = false
+        )
         {
             HttpResponseMessage response = null;
             string result = null;
@@ -131,12 +151,23 @@
             try
             {
                 _requestMediator.WaitOne();
-                LogConsumer.Trace("ServiceInvokerAsync -&gt; Method: {0} | Endpoint: {1}", method.GetHumanReadableValue(), endpoint);
+
+                LogConsumer.Trace(
+                    "ServiceInvokerAsync -&gt; Method: {0} | Endpoint: {1}",
+                    method.GetHumanReadableValue(),
+                    endpoint
+                );
+
                 LogConsumer.Debug(uriBuilder.ToString());
+
                 var cookieContainer = new CookieContainer();
+
                 using var handler = new HttpClientHandler { CookieContainer = cookieContainer };
+
                 using var client = new HttpClient(handler);
+
                 ConfigureClient(client, requiresAuthentication);
+
                 if (cookie != null)
                 {
                     cookieContainer.Add(uriBuilder.Uri, cookie);
@@ -144,15 +175,21 @@
 
                 response = await RequestInternalAsync(method, token, data, client, uriBuilder)
                     .ConfigureAwait(false);
+
                 token.ThrowIfCancellationRequested();
+
                 result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 response.EnsureSuccessStatusCode();
+
                 return result;
             }
             catch (AggregateException e)
             {
                 var ex = e.InnerExceptions.FirstOrDefault() ?? e.InnerException ?? e;
+
                 exr = HandleException(ex, response, uriBuilder.Uri, method, data, result);
+
                 if (isRetry)
                 {
                     throw exr;
@@ -161,12 +198,24 @@
             catch (Exception e)
             {
                 exr = HandleException(e, response, uriBuilder.Uri, method, data, result);
+
                 if (isRetry)
                 {
                     throw exr;
                 }
             }
-            return await ServiceInvokerInternal(method, endpoint, token, data, uriBuilder, cookie, requiresAuthentication, true).ConfigureAwait(false);
+
+            return await ServiceInvokerInternal(
+                    method,
+                    endpoint,
+                    token,
+                    data,
+                    uriBuilder,
+                    cookie,
+                    requiresAuthentication,
+                    true
+                )
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,6 +227,7 @@
         /// <param name="method">The method.</param>
         /// <param name="data">The data.</param>
         /// <param name="result">The result.</param>
+        /// <returns>Exception.</returns>
         /// <exception cref="UnexpectedApiResponseException"></exception>
         private Exception HandleException(
             Exception exception,
@@ -185,7 +235,8 @@
             Uri uri,
             HttpRequestMethod method,
             string data,
-            string result)
+            string result
+        )
         {
             var statusCode = 0;
             if (response != null)
@@ -193,26 +244,36 @@
                 statusCode = (int)response.StatusCode;
             }
 
-            var ex = new UnexpectedApiResponseException(uri, method.ToString(), data, result, statusCode, exception);
-            if (statusCode == 429 ||
-                statusCode == 503)
+            var ex = new UnexpectedApiResponseException(
+                uri,
+                method.ToString(),
+                data,
+                result,
+                statusCode,
+                exception
+            );
+            if (statusCode == 429 || statusCode == 503)
             {
                 _requestMediator.Reset();
-                LogConsumer.Warning("HTTP {2} status code on method {0} - uri {1}", method.ToString(), uri, statusCode);
+                LogConsumer.Warning(
+                    "HTTP {2} status code on method {0} - uri {1}",
+                    method.ToString(),
+                    uri,
+                    statusCode
+                );
                 Thread.Sleep(60 * 1000);
                 _requestMediator.Set();
                 return ex;
             }
-            if (statusCode != 0 &&
-                statusCode != 408 &&
-                statusCode != 500 &&
-                statusCode != 502)
+            if (statusCode != 0 && statusCode != 408 && statusCode != 500 && statusCode != 502)
             {
                 throw ex;
             }
 
             LogConsumer.Warning("Retrying the {0} request", method.ToString());
-            TelemetryAnalytics.TrackHit($"VTEX_handle_exception_retrying_{method.ToString()}_request");
+            TelemetryAnalytics.TrackHit(
+                $"VTEX_handle_exception_retrying_{method.ToString()}_request"
+            );
             return ex;
         }
 
@@ -225,8 +286,13 @@
         {
             client.DefaultRequestHeaders.ExpectContinue = false;
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(@"application/json"));
-            client.DefaultRequestHeaders.TryAddWithoutValidation(@"User-Agent", $@"guiBranco-VTEX-SDK-dotnet {InternalUserAgent} +https://github.com/guibranco/VTEX-SDK-dotnet");
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(@"application/json")
+            );
+            client.DefaultRequestHeaders.TryAddWithoutValidation(
+                @"User-Agent",
+                $@"guiBranco-VTEX-SDK-dotnet {InternalUserAgent} +https://github.com/guibranco/VTEX-SDK-dotnet"
+            );
             if (!requiresAuthentication)
             {
                 return;
@@ -237,21 +303,29 @@
         }
 
         /// <summary>
-        /// Requests the internal asynchronous.
+        /// Sends an HTTP request asynchronously using the specified method and returns the response.
         /// </summary>
-        /// <param name="method">The method.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="client">The client.</param>
-        /// <param name="uriBuilder">The URI builder.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">method - null</exception>
+        /// <param name="method">The HTTP method to use for the request (e.g., GET, POST, DELETE, etc.).</param>
+        /// <param name="token">A cancellation token to cancel the operation if needed.</param>
+        /// <param name="data">The data to be sent in the request body, if applicable.</param>
+        /// <param name="client">The HttpClient instance used to send the request.</param>
+        /// <param name="uriBuilder">The UriBuilder that constructs the URI for the request.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the HttpResponseMessage received from the server.</returns>
+        /// <remarks>
+        /// This method handles different HTTP methods such as GET, POST, PUT, DELETE, and PATCH.
+        /// It constructs the appropriate request based on the provided method and sends it using the specified HttpClient.
+        /// If the method requires a body (like POST, PUT, or PATCH), it creates a StringContent object with the provided data.
+        /// The method also supports cancellation through the provided CancellationToken.
+        /// The response from the server is returned as an HttpResponseMessage, which can be used to inspect the result of the request.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when an unsupported HTTP method is provided.</exception>
         private static async Task<HttpResponseMessage> RequestInternalAsync(
             HttpRequestMethod method,
             CancellationToken token,
             string data,
             HttpClient client,
-            UriBuilder uriBuilder)
+            UriBuilder uriBuilder
+        )
         {
             HttpResponseMessage response;
             StringContent content = null;
@@ -263,23 +337,30 @@
             switch (method)
             {
                 case HttpRequestMethod.DELETE:
-                    response = await client.DeleteAsync(uriBuilder.Uri, token).ConfigureAwait(false);
+                    response = await client
+                        .DeleteAsync(uriBuilder.Uri, token)
+                        .ConfigureAwait(false);
                     break;
                 case HttpRequestMethod.GET:
                     response = await client.GetAsync(uriBuilder.Uri, token).ConfigureAwait(false);
                     break;
                 case HttpRequestMethod.POST:
-                    response = await client.PostAsync(uriBuilder.Uri, content, token).ConfigureAwait(false);
+                    response = await client
+                        .PostAsync(uriBuilder.Uri, content, token)
+                        .ConfigureAwait(false);
                     break;
                 case HttpRequestMethod.PUT:
-                    response = await client.PutAsync(uriBuilder.Uri, content, token).ConfigureAwait(false);
+                    response = await client
+                        .PutAsync(uriBuilder.Uri, content, token)
+                        .ConfigureAwait(false);
                     break;
                 case HttpRequestMethod.PATCH:
                     var request = new HttpRequestMessage(new HttpMethod(@"PATCH"), uriBuilder.Uri)
                     {
-                        Content = content
+                        Content = content,
                     };
                     response = await client.SendAsync(request, token).ConfigureAwait(false);
+                    request.Dispose();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(method), method, null);
@@ -313,86 +394,136 @@
         }
 
         /// <summary>
-        /// Services the invoker asynchronous.
+        /// Asynchronously invokes a service endpoint with the specified HTTP method and parameters.
         /// </summary>
-        /// <param name="method">The method.</param>
-        /// <param name="endpoint">The endpoint.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="queryString">The query string.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="restEndpoint">The rest endpoint.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">restEndpoint - null</exception>
+        /// <param name="method">The HTTP request method to be used (e.g., GET, POST).</param>
+        /// <param name="endpoint">The endpoint of the service to be invoked. This should not be localizable.</param>
+        /// <param name="token">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <param name="queryString">An optional dictionary of query string parameters to be included in the request.</param>
+        /// <param name="data">An optional string containing data to be sent with the request.</param>
+        /// <param name="restEndpoint">An optional parameter specifying the REST endpoint type. Defaults to <see cref="RequestEndpoint.DEFAULT"/>.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the response as a string.</returns>
+        /// <remarks>
+        /// This method constructs a URI using the provided endpoint and query string parameters,
+        /// and then invokes the service asynchronously. It handles authentication and cookie management
+        /// as needed based on the service requirements. The method is designed to work with various
+        /// HTTP methods and can send data in the request body if specified.
+        /// The response from the service is returned as a string, allowing for further processing or
+        /// parsing as needed by the caller.
+        /// </remarks>
         public async Task<string> ServiceInvokerAsync(
             HttpRequestMethod method,
             [Localizable(false)] string endpoint,
             CancellationToken token,
             Dictionary<string, string> queryString = null,
             string data = null,
-            RequestEndpoint restEndpoint = RequestEndpoint.DEFAULT)
+            RequestEndpoint restEndpoint = RequestEndpoint.DEFAULT
+        )
         {
-            string host;
             Cookie cookie = null;
             var requiresAuthentication = true;
             var protocol = @"https";
             var port = 443;
-            switch (restEndpoint)
-            {
-                case RequestEndpoint.DEFAULT:
-                    host = $@"{_accountName}.vtexcommercestable.com.br";
-                    endpoint = $@"api/{endpoint}";
-                    break;
-                case RequestEndpoint.PAYMENTS:
-                    host = $@"{_accountName}.vtexpayments.com.br";
-                    endpoint = $@"api/{endpoint}";
-                    break;
-                case RequestEndpoint.LOGISTICS:
-                    host = @"logistics.vtexcommercestable.com.br";
-                    endpoint = $@"api/{endpoint}";
-                    if (queryString == null)
-                    {
-                        queryString = new Dictionary<string, string>();
-                    }
-
-                    queryString.Add(@"an", _accountName);
-                    break;
-                case RequestEndpoint.API:
-                case RequestEndpoint.MASTER_DATA:
-                    host = @"api.vtex.com";
-                    endpoint = $@"{_accountName}/{endpoint}";
-                    break;
-                case RequestEndpoint.BRIDGE:
-                    host = $@"{_accountName}.myvtex.com";
-                    endpoint = $@"api/{endpoint}";
-                    if (!string.IsNullOrWhiteSpace(_authCookie))
-                    {
-                        cookie = new Cookie("VtexIdclientAutCookie", _authCookie);
-                    }
-
-                    break;
-                case RequestEndpoint.HEALTH:
-                    protocol = @"http";
-                    port = 80;
-                    host = @"monitoring.vtex.com";
-                    endpoint = @"api/healthcheck/modules";
-                    requiresAuthentication = false;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(restEndpoint), restEndpoint, null);
-            }
+            var host = GetHostData(
+                ref endpoint,
+                ref queryString,
+                restEndpoint,
+                ref cookie,
+                ref protocol,
+                ref port,
+                ref requiresAuthentication
+            );
             var query = string.Empty;
-            if (queryString != null &&
-                queryString.Count > 0)
+            if (queryString is { Count: > 0 })
             {
                 query = new QueryStringBuilder().AddRange(queryString).ToString();
             }
 
             var builder = new UriBuilder(protocol, host, port, endpoint)
             {
-                Query = query.Replace(@"?", string.Empty)
+                Query = query.Replace(@"?", string.Empty),
             };
-            return await ServiceInvokerInternal(method, endpoint, token, data, builder, cookie, requiresAuthentication)
-                       .ConfigureAwait(false);
+            return await ServiceInvokerInternal(
+                    method,
+                    endpoint,
+                    token,
+                    data,
+                    builder,
+                    cookie,
+                    requiresAuthentication
+                )
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets the host data.
+        /// </summary>
+        /// <param name="endpoint">The endpoint.</param>
+        /// <param name="queryString">The query string.</param>
+        /// <param name="restEndpoint">The rest endpoint.</param>
+        /// <param name="cookie">The cookie.</param>
+        /// <param name="protocol">The protocol.</param>
+        /// <param name="port">The port.</param>
+        /// <param name="requiresAuthentication">if set to <c>true</c> [requires authentication].</param>
+        /// <returns>System.String.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">restEndpoint - null</exception>
+        private string GetHostData(
+            ref string endpoint,
+            ref Dictionary<string, string> queryString,
+            RequestEndpoint restEndpoint,
+            ref Cookie cookie,
+            ref string protocol,
+            ref int port,
+            ref bool requiresAuthentication
+        )
+        {
+            string host;
+            switch (restEndpoint)
+            {
+                case RequestEndpoint.DEFAULT:
+                    host = $@"{_accountName}.{VTEXConstants.PlatformStableDomain}";
+                    endpoint = $@"api/{endpoint}";
+                    break;
+                case RequestEndpoint.PAYMENTS:
+                    host = $@"{_accountName}.{VTEXConstants.PaymentsDomain}";
+                    endpoint = $@"api/{endpoint}";
+                    break;
+                case RequestEndpoint.LOGISTICS:
+                    host = VTEXConstants.LogisticsDomain;
+                    endpoint = $@"api/{endpoint}";
+                    if (queryString == null)
+                    {
+                        queryString = new();
+                    }
+
+                    queryString.Add(@"an", _accountName);
+                    break;
+                case RequestEndpoint.API:
+                case RequestEndpoint.MASTER_DATA:
+                    host = VTEXConstants.ApiDomain;
+                    endpoint = $@"{_accountName}/{endpoint}";
+                    break;
+                case RequestEndpoint.BRIDGE:
+                    host = $@"{_accountName}.{VTEXConstants.MyVtexDomain}";
+                    endpoint = $@"api/{endpoint}";
+                    if (!string.IsNullOrWhiteSpace(_authCookie))
+                    {
+                        cookie = new(VTEXConstants.VtexIdClientAuthCookieName, _authCookie);
+                    }
+
+                    break;
+                case RequestEndpoint.HEALTH:
+                    protocol = @"http";
+                    port = 80;
+                    host = VTEXConstants.MonitoringDomain;
+                    endpoint = @"api/healthcheck/modules";
+                    requiresAuthentication = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(restEndpoint), restEndpoint, null);
+            }
+
+            return host;
         }
 
         #endregion

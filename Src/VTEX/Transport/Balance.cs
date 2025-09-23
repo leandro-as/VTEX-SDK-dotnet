@@ -1,12 +1,26 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="Balance.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
+    using System;
     using CrispyWaffle.Serialization;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Class Balance. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class Balance
     {
         /// <summary>
@@ -47,10 +61,15 @@
         /// <summary>
         /// Gets or sets the time to refill.
         /// </summary>
-        /// <value>
-        /// The time to refill.
-        /// </value>
+        /// <value>The time to refill.</value>
         [JsonProperty("timeToRefill")]
         public NotNullObserver TimeToRefill { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date of supply UTC.
+        /// </summary>
+        /// <value>The date of supply UTC.</value>
+        [JsonProperty("dateOfSupplyUtc")]
+        public DateTime DateOfSupplyUtc { get; set; }
     }
 }

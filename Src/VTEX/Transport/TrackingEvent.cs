@@ -1,14 +1,27 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="TrackingEvent.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
-    using CrispyWaffle.Serialization;
-    using Newtonsoft.Json;
     using System;
     using System.ComponentModel;
+    using CrispyWaffle.Serialization;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Class TrackingEvent. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class TrackingEvent
     {
         #region Private fields
@@ -17,6 +30,7 @@
         /// The date
         /// </summary>
         private DateTime _date;
+
         /// <summary>
         /// The date set
         /// </summary>
@@ -29,44 +43,34 @@
         /// <summary>
         /// Gets or sets the city.
         /// </summary>
-        /// <value>
-        /// The city.
-        /// </value>
+        /// <value>The city.</value>
         [JsonProperty("city")]
         public string City { get; set; }
 
         /// <summary>
         /// Gets or sets the state.
         /// </summary>
-        /// <value>
-        /// The state.
-        /// </value>
+        /// <value>The state.</value>
         [JsonProperty("state")]
         public string State { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
-        /// <value>
-        /// The description.
-        /// </value>
+        /// <value>The description.</value>
         [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the date internal.
         /// </summary>
-        /// <value>
-        /// The date internal.
-        /// </value>
+        /// <value>The date internal.</value>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("date")]
         public string DateInternal
         {
-            get => _dateSet
-                       ? _date.ToString(@"s")
-                       : null;
+            get => _dateSet ? _date.ToString(@"s") : null;
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
@@ -81,9 +85,7 @@
         /// <summary>
         /// Gets or sets the date.
         /// </summary>
-        /// <value>
-        /// The date.
-        /// </value>
+        /// <value>The date.</value>
         [JsonIgnore]
         public DateTime Date
         {

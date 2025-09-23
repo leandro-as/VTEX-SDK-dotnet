@@ -1,17 +1,29 @@
-﻿namespace VTEX.Transport
+// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-16-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="BridgeItem.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport.Bridge
 {
-    using CrispyWaffle.Serialization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using CrispyWaffle.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Class BridgeItem. This class cannot be inherited.
     /// </summary>
-
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class BridgeItem
     {
         /// <summary>
@@ -43,9 +55,10 @@
             set
             {
                 var json = JToken.Parse(value).ToString();
-                _actions = SerializerFactory.GetSerializer<List<BridgeAction>>()
-                                            .Deserialize(json)
-                                            .ToArray();
+                _actions = SerializerFactory
+                    .GetSerializer<List<BridgeAction>>()
+                    .Deserialize(json)
+                    .ToArray();
             }
         }
 

@@ -1,4 +1,17 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="OrdersList.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
     using CrispyWaffle.Serialization;
     using Newtonsoft.Json;
@@ -6,7 +19,7 @@
     /// <summary>
     /// Class OrdersList. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class OrdersList
     {
         /// <summary>
@@ -36,6 +49,12 @@
         /// <value>The stats.</value>
         [JsonProperty("stats")]
         public StatsList Stats { get; set; }
-    }
 
+        /// <summary>
+        /// Gets or sets the report records limit.
+        /// </summary>
+        /// <value>The report records limit.</value>
+        [JsonProperty("reportRecordsLimit")]
+        public int ReportRecordsLimit { get; set; }
+    }
 }

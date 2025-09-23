@@ -1,16 +1,28 @@
-﻿namespace VTEX.Transport
+// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="ShippingNotification.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
+    using System.ComponentModel;
     using CrispyWaffle.Extensions;
     using CrispyWaffle.Serialization;
-    using Enums;
     using Newtonsoft.Json;
-    using System.ComponentModel;
+    using VTEX.Enums;
 
     /// <summary>
-    /// A shipping notification.
+    /// Class ShippingNotification. This class cannot be inherited.
     /// </summary>
-
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class ShippingNotification
     {
         /// <summary>
@@ -29,9 +41,7 @@
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
+        /// <value>The type.</value>
         [JsonIgnore]
         public InvoiceType Type { get; set; }
 
@@ -39,7 +49,6 @@
         /// Gets or sets the invoice number.
         /// </summary>
         /// <value>The invoice number.</value>
-
         [JsonProperty("invoiceNumber")]
         public string InvoiceNumber { get; set; }
 
@@ -47,7 +56,6 @@
         /// Gets or sets the invoice value.
         /// </summary>
         /// <value>The invoice value.</value>
-
         [JsonProperty("invoiceValue")]
         public int InvoiceValue { get; set; }
 
@@ -55,7 +63,6 @@
         /// Gets or sets the Key of the invoice.
         /// </summary>
         /// <value>The invoice key.</value>
-
         [JsonProperty("invoiceKey")]
         public string InvoiceKey { get; set; }
 
@@ -63,7 +70,6 @@
         /// Gets or sets URL of the invoice.
         /// </summary>
         /// <value>The invoice URL.</value>
-
         [JsonProperty("invoiceUrl")]
         [Localizable(false)]
         public string InvoiceUrl { get; set; }
@@ -72,7 +78,6 @@
         /// Gets or sets the courier.
         /// </summary>
         /// <value>The courier.</value>
-
         [JsonProperty("courier")]
         public string Courier { get; set; }
 
@@ -80,7 +85,6 @@
         /// Gets or sets the tracking number.
         /// </summary>
         /// <value>The tracking number.</value>
-
         [JsonProperty("trackingNumber")]
         public string TrackingNumber { get; set; }
 
@@ -88,7 +92,6 @@
         /// Gets or sets the tracking url.
         /// </summary>
         /// <value>The tracking url.</value>
-
         [JsonProperty("trackingUrl")]
         [Localizable(false)]
         public string TrackingUrl { get; set; }
@@ -97,7 +100,6 @@
         /// Gets or sets the issuance date.
         /// </summary>
         /// <value>The issuance date.</value>
-
         [JsonProperty("issuanceDate")]
         public string IssuanceDate { get; set; }
 

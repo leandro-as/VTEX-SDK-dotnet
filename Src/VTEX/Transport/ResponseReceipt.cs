@@ -1,19 +1,34 @@
-﻿namespace VTEX.Transport
+﻿// ***********************************************************************
+// Assembly         : VTEX
+// Author           : Guilherme Branco Stracini
+// Created          : 01-15-2023
+//
+// Last Modified By : Guilherme Branco Stracini
+// Last Modified On : 01-16-2023
+// ***********************************************************************
+// <copyright file="ResponseReceipt.cs" company="Guilherme Branco Stracini">
+//     © 2020 Guilherme Branco Stracini. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace VTEX.Transport
 {
+    using System;
+    using System.Globalization;
     using CrispyWaffle.Serialization;
     using Newtonsoft.Json;
-    using System;
 
     /// <summary>
     /// Class ResponseReceipt. This class cannot be inherited.
     /// </summary>
-    [Serializer(SerializerFormat.JSON)]
+    [Serializer(SerializerFormat.Json)]
     public sealed class ResponseReceipt
     {
         /// <summary>
         /// The date
         /// </summary>
         private DateTime _date;
+
         /// <summary>
         /// The date set
         /// </summary>
@@ -26,17 +41,14 @@
         [JsonProperty("date")]
         public string DateInternal
         {
-            get => _dateSet
-                       ? _date.ToString(@"s")
-                       : null;
+            get => _dateSet ? _date.ToString(@"s", CultureInfo.InvariantCulture) : null;
             set
             {
+                _dateSet = true;
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    _date = DateTime.Parse(value);
+                    _date = DateTime.Parse(value, CultureInfo.InvariantCulture);
                 }
-
-                _dateSet = true;
             }
         }
 
@@ -68,6 +80,5 @@
         /// <value>The receipt.</value>
         [JsonProperty("receipt")]
         public string Receipt { get; set; }
-
     }
 }
